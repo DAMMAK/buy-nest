@@ -2,7 +2,7 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CartService } from './cart.service';
-import { CartItem } from './interfaces/cart-item.interface';
+import { CartItem } from '@app/shared/interfaces/cart-item.interface';
 
 @Controller()
 export class CartController {

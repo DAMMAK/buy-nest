@@ -1,4 +1,3 @@
-// api-gateway/src/app.module.ts
 import { Module } from '@nestjs/common';
 import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -12,6 +11,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import type { RedisClientOptions } from 'redis';
+import { CircuitBreakerService } from './common/circuit-breaker.service';
 
 @Module({
   imports: [
@@ -36,7 +36,74 @@ import type { RedisClientOptions } from 'redis';
         }),
         inject: [ConfigService],
       },
-      // Similar configurations for other services
+      {
+        name: 'PRODUCT_SERVICE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'product-service',
+              brokers: [configService.get('KAFKA_BROKER', 'localhost:9092')],
+            },
+            consumer: {
+              groupId: 'product-consumer',
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: 'CART_SERVICE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'cart-service',
+              brokers: [configService.get('KAFKA_BROKER', 'localhost:9092')],
+            },
+            consumer: {
+              groupId: 'cart-consumer',
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: 'ORDER_SERVICE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'order-service',
+              brokers: [configService.get('KAFKA_BROKER', 'localhost:9092')],
+            },
+            consumer: {
+              groupId: 'order-consumer',
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
+      {
+        name: 'PAYMENT_SERVICE',
+        imports: [ConfigModule],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: 'payment-service',
+              brokers: [configService.get('KAFKA_BROKER', 'localhost:9092')],
+            },
+            consumer: {
+              groupId: 'payment-consumer',
+            },
+          },
+        }),
+        inject: [ConfigService],
+      },
     ]),
     ThrottlerModule.forRoot({
       throttlers: [
@@ -70,6 +137,8 @@ import type { RedisClientOptions } from 'redis';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    CircuitBreakerService,
   ],
+  exports: [CircuitBreakerService],
 })
 export class AppModule {}

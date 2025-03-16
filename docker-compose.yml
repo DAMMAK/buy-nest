@@ -1,5 +1,4 @@
 # docker-compose.yml
-version: '3.8'
 
 services:
   zookeeper:
@@ -7,14 +6,14 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     ports:
-      - "2181:2181"
+      - '2181:2181'
 
   kafka:
     image: confluentinc/cp-kafka:latest
     depends_on:
       - zookeeper
     ports:
-      - "9092:9092"
+      - '9092:9092'
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -25,17 +24,17 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
     environment:
-      - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - 'discovery.type=single-node'
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
+      - '9200:9200'
 
   api-gateway:
-    build: ./api-gateway
+    build: ./apps/api-gateway
     ports:
-      - "3000:3000"
+      - '3000:3000'
     depends_on:
       - kafka
       - user-service
@@ -49,7 +48,7 @@ services:
       NODE_ENV: development
 
   user-service:
-    build: ./user-service
+    build: ./apps/user-service
     depends_on:
       - kafka
       - user-db
@@ -72,10 +71,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: user_service
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   product-service:
-    build: ./product-service
+    build: ./apps/product-service
     depends_on:
       - kafka
       - product-db
@@ -98,7 +97,7 @@ services:
       POSTGRES_DB: product_service
 
   cart-service:
-    build: ./cart-service
+    build: ./apps/cart-service
     depends_on:
       - kafka
       - cart-db
@@ -114,7 +113,7 @@ services:
       - cart_data:/data
 
   order-service:
-    build: ./order-service
+    build: ./apps/order-service
     depends_on:
       - kafka
       - order-db
@@ -137,7 +136,7 @@ services:
       POSTGRES_DB: order_service
 
   payment-service:
-    build: ./payment-service
+    build: ./apps/payment-service
     depends_on:
       - kafka
       - payment-db
@@ -161,7 +160,7 @@ services:
       POSTGRES_DB: payment_service
 
   notification-service:
-    build: ./notification-service
+    build: ./apps/notification-service
     depends_on:
       - kafka
     environment:

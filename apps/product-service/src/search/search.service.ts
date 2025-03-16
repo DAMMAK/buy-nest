@@ -42,7 +42,8 @@ export class SearchService {
     return hits.hits.map((item) => ({
       id: item._id,
       score: item._score,
-      ...item._source,
+      ...item,
+      //   ...item._source,
     }));
   }
 

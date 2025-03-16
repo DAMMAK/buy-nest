@@ -1,6 +1,6 @@
 // cart-service/src/cart/cart.service.ts
 import { Injectable } from '@nestjs/common';
-import { CartItem } from './interfaces/cart-item.interface';
+import { CartItem } from '@app/shared/interfaces/cart-item.interface';
 import Redis from 'ioredis';
 
 @Injectable()
